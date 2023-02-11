@@ -1,1 +1,1 @@
-# webgpu-dev-tools
+# webgpu-devtools
