@@ -1,0 +1,33 @@
+{
+  "name": "webgpu-devtools",
+  "short_name": "webgpu-devtools",
+  "version": "0.0.1",
+  "author": "Takahiro Aoyagi",
+  "description": "WebGPU devtools",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [{
+    "js": [
+      "content-script.js"
+	],
+    "matches": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "run_at" : "document_start",
+    "all_frames" : true
+  }],
+  "web_accessible_resources": [{
+    "resources": ["webgpu-devtools.bundle.js"],
+    "matches": [
+      "http://*/*",
+      "https://*/*"
+    ]
+  }]
+}
