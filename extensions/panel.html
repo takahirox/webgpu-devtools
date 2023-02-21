@@ -1,0 +1,111 @@
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+      ul {
+        margin-left: 1em;
+        padding-left: 1em;
+      }
+      .clickable {
+        cursor: pointer;
+      }
+      .error {
+        color: #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <p>WebGPU devtools <a href="https://github.com/takahirox/webgpu-devtools" target="_blank">How to use</a></p>
+    <div>
+      <button id="resetButton">Reset</button>
+      <button id="expandAllButton">Expand all</button>
+      <button id="hideAllButton">Hide all</button>
+    </div>
+    <br />
+    <div id="content">
+      <ul>
+      <li id="gpus">
+        <span id="gpusTitle"><span id="gpusSign">+</span> GPUs: <span id="gpusNum">0</span></span>
+        <ul id="gpusList"></ul>
+      </li>
+      <li id="adapters">
+        <span id="adaptersTitle"><span id="adaptersSign">+</span> Adapters: <span id="adaptersNum">0</span></span>
+        <ul id="adaptersList"></ul>
+      </li>
+      <li id="devices">
+        <span id="devicesTitle"><span id="devicesSign">+</span> Devices: <span id="devicesNum">0</span></span>
+        <ul id="devicesList"></ul>
+      </li>
+      <li id="canvasContexts">
+        <span id="canvasContextsTitle"><span id="canvasContextsSign">+</span> GPUCanvasContexts: <span id="canvasContextsNum">0</span></span>
+        <ul id="canvasContextsList"></ul>
+      </li>
+      <li id="queues">
+        <span id="queuesTitle"><span id="queuesSign">+</span> Queues: <span id="queuesNum">0</span></span>
+        <ul id="queuesList"></ul>
+      </li>
+      <li id="buffers">
+        <span id="buffersTitle"><span id="buffersSign">+</span> Buffers: <span id="buffersNum">0</span></span>
+        <ul id="buffersList"></ul>
+      </li>
+      <li id="textures">
+        <span id="texturesTitle"><span id="texturesSign">+</span> Textures: <span id="texturesNum">0</span></span>
+        <ul id="texturesList"></ul>
+      </li>
+      <li id="textureViews">
+        <span id="textureViewsTitle"><span id="textureViewsSign">+</span> TextureViews: <span id="textureViewsNum">0</span></span>
+        <ul id="textureViewsList"></ul>
+      </li>
+      <li id="samplers">
+        <span id="samplersTitle"><span id="samplersSign">+</span> Samplers: <span id="samplersNum">0</span></span>
+        <ul id="samplersList"></ul>
+      </li>
+      <li id="bindGroupLayouts">
+        <span id="bindGroupLayoutsTitle"><span id="bindGroupLayoutsSign">+</span> BindGroupLayouts: <span id="bindGroupLayoutsNum">0</span></span>
+        <ul id="bindGroupLayoutsList"></ul>
+      </li>
+      <li id="pipelineLayouts">
+        <span id="pipelineLayoutsTitle"><span id="pipelineLayoutsSign">+</span> PipelineLayouts: <span id="pipelineLayoutsNum">0</span></span>
+        <ul id="pipelineLayoutsList"></ul>
+      </li>
+      <li id="bindGroups">
+        <span id="bindGroupsTitle"><span id="bindGroupsSign">+</span> BindGroups: <span id="bindGroupsNum">0</span></span>
+        <ul id="bindGroupsList"></ul>
+      </li>
+      <li id="shaderModules">
+        <span id="shaderModulesTitle"><span id="shaderModulesSign">+</span> ShaderModules: <span id="shaderModulesNum">0</span></span>
+        <ul id="shaderModulesList"></ul>
+      </li>
+      <li id="renderPipelines">
+        <span id="renderPipelinesTitle"><span id="renderPipelinesSign">+</span> RenderPipelines: <span id="renderPipelinesNum">0</span></span>
+        <ul id="renderPipelinesList"></ul>
+      </li>
+      <li id="computePipelines">
+        <span id="computePipelinesTitle"><span id="computePipelinesSign">+</span> ComputePipelines: <span id="computePipelinesNum">0</span></span>
+        <ul id="computePipelinesList"></ul>
+      </li>
+      <li id="commandEncoders">
+        <span id="commandEncodersTitle"><span id="commandEncodersSign">+</span> CommandEncoders: <span id="commandEncodersNum">0</span></span>
+        <ul id="commandEncodersList"></ul>
+      </li>
+      <li id="renderPassEncoders">
+        <span id="renderPassEncodersTitle"><span id="renderPassEncodersSign">+</span> RenderPassEncoders: <span id="renderPassEncodersNum">0</span></span>
+        <ul id="renderPassEncodersList"></ul>
+      </li>
+      <li id="computePassEncoders">
+        <span id="computePassEncodersTitle"><span id="computePassEncodersSign">+</span> ComputePassEncoders: <span id="computePassEncodersNum">0</span></span>
+        <ul id="computePassEncodersList"></ul>
+      </li>
+      <li id="frames">
+        <span id="framesTitle"><span id="framesSign">+</span> Frames: <span id="framesNum">0</span></span>
+        <ul id="framesList"></ul>
+      </li>
+    </ul>
+    <script src="panel.js"></script>
+  </body>
+</html>

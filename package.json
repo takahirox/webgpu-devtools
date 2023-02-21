@@ -1,0 +1,48 @@
+{
+  "name": "webgpu-devtools",
+  "version": "0.0.1",
+  "description": "WebGPU devtools browser extension",
+  "main": "dist/webgpu-devtools.bundle.js",
+  "keywords": [
+    "browser",
+    "browser-extension",
+    "chrome",
+    "chrome-extension",
+    "debug",
+    "debugger",
+    "typescript",
+    "webext",
+    "webextension",
+    "webgpu"
+  ],
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takahirox/webgpu-devtools.git"
+  },
+  "author": "Takahiro <hogehoge@gachapin.jp>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/takahirox/webgpu-devtools/issues"
+  },
+  "homepage": "https://github.com/takahirox/webgpu-devtools#readme",
+  "dependencies": {
+    "codemirror": "^5.65.12"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.224",
+    "@types/codemirror": "^5.60.7",
+    "@webgpu/types": "^0.1.27",
+    "css-loader": "^6.7.3",
+    "style-loader": "^3.3.2",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
+
