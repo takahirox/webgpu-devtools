@@ -12,6 +12,7 @@
     "http://*/*",
     "https://*/*"
   ],
+  "devtools_page": "devtools.html",
   "content_scripts": [{
     "js": [
       "content-script.js"
