@@ -30,6 +30,15 @@ port.onMessage.addListener(message => {
     img.src = url;
     document.getElementById('content').appendChild(div);
     window.scrollTo(0, document.body.scrollHeight);
+  } else if (message.action === 'buffer-data') {
+    const url = message.url;
+    const div = document.createElement('div');
+    fetch(url).then(response => response.arrayBuffer()).then(buffer => {
+      const array = new Float32Array(buffer);
+      div.innerText = array;
+    });
+    document.getElementById('content').appendChild(div);
+    window.scrollTo(0, document.body.scrollHeight);
   }
 });
 

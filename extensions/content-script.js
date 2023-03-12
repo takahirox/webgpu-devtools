@@ -34,6 +34,16 @@ window.addEventListener('webgpu-devtools-texture-image', event => {
   });
 }, false);
 
+window.addEventListener('webgpu-devtools-buffer-data', event => {
+  const data = event.detail.data;
+  const blob = new Blob([data], {type: 'application/octet-stream'});
+  const url = URL.createObjectURL(blob);
+  port.postMessage({
+    action: 'buffer-data',
+    url: url
+  });
+}, false);
+
 port.postMessage({
   action: 'onLoad'
 });

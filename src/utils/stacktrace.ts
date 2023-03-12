@@ -2,7 +2,8 @@
 // TODO: Check and add workaround for other browsers if needed.
 
 export const getStackTraceAsString = (excludedTopmost: () => void): string => {
-  const error = {stack: undefined};
+  // TODO: Avoid any
+  const error = {stack: undefined} as any;
   Error.captureStackTrace(error, excludedTopmost);
   return error.stack || '';
 };
