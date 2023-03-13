@@ -14,15 +14,15 @@ port.onMessage.addListener(message => {
 
     img.onload = () => {
       if (img.width > img.height) {
-        const newWidth = Math.min(img.width, 640);
+        const newWidth = Math.min(img.width, 160);
         const ratio = newWidth / img.width;
-        img.width = img.width * ratio;
-        img.height = img.height * ratio;
+        img.width = Math.floor(img.width * ratio);
+        img.height = Math.floor(img.height * ratio);
       } else {
-        const newHeight = Math.min(img.height, 480);
+        const newHeight = Math.min(img.height, 120);
         const ratio = newHeight / img.height;
-        img.width = img.width * ratio;
-        img.height = img.height * ratio;
+        img.width = Math.floor(img.width * ratio);
+        img.height = Math.floor(img.height * ratio);
       }
       div.appendChild(img);
       window.scrollTo(0, document.body.scrollHeight);

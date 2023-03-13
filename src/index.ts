@@ -191,6 +191,13 @@ class GPUTextureResourceManager extends BaseResourceManager<GPUTexture, GPUTextu
 
   setImageData(id: ResourceId, imageData: ImageData): void {
     this.getProperties(id).imageData = imageData;
+
+    // TODO: Temporal. Fix me later.
+    if (frameNum <= 100) {
+      dispatchCustomEvent('webgpu-devtools-texture-image', {
+        imageData
+      });
+    }
   }
 }
 
@@ -343,19 +350,32 @@ class GPURenderPassEncoderResourceManager extends BaseResourceManager<GPURenderP
 // TODO: Avoid any
 type History = {
   args?: any[];
+  frameNum: number;
   name: string;
   stackTrace: string;
 };
 
 class HistoryManager {
+  private enabled: boolean;
   private histories: History[];
 
   constructor() {
+    this.enabled = true;
     this.histories = [];
   }
 
   add(name: string, stackTrace: string, args?: any[]) {
-    this.histories.push({ args, name, stackTrace });
+    if (this.enabled) {
+      this.histories.push({ args, frameNum, name, stackTrace });
+      // TODO: Temporal. Fix me later.
+      dispatchCustomEvent('webgpu-devtools-function-call', {
+        name
+      });
+    }
+  }
+
+  enable(enabled: boolean) {
+    this.enabled = enabled;
   }
 
 /*
@@ -369,9 +389,6 @@ class HistoryManager {
     }
     str += `${parseStackTraceString(history.stackTrace)}\n`;
     console.log(str);
-    dispatchCustomEvent('webgpu-devtools-function-call', {
-      name: history.name
-    });
   }
 */
 }
@@ -451,15 +468,13 @@ class StatisticsAnalyzer {
 //   - Display texture image and frame(drawing) buffer
 
 // TODO: Avoid any
-/*
+
 const dispatchCustomEvent = (type: string, detail: any) => {
   window.dispatchEvent(new CustomEvent(type, {
     // TODO: use cloneInto for Firefox
     detail: detail
   }));
-  dispatchEventCount++;
 };
-*/
 
 const contextManager = new GPUCanvasContextResourceManager();
 const deviceManager = new GPUDeviceResourceManager();
@@ -473,6 +488,19 @@ const commandEncoderManager = new GPUCommandEncoderResourceManager();
 const commandBufferManager = new GPUCommandBufferResourceManager();
 const historyManager = new HistoryManager();
 const statisticsAnalyzer = new StatisticsAnalyzer();
+
+let frameNum = 0;
+const originalRequestAnimationFrame = window.requestAnimationFrame;
+window.requestAnimationFrame = function (callback) {
+  frameNum++;
+
+  // Record only the first 100 frames for now
+  if (frameNum === 100) {
+    historyManager.enable(false);
+  }
+
+  return originalRequestAnimationFrame(callback);
+};
 
 const originalGetContext = HTMLCanvasElement.prototype.getContext;
 HTMLCanvasElement.prototype.getContext = function (contextType: string, contextAttributes?: Object) {
@@ -839,7 +867,6 @@ const createReadTexturesCommand = (device: GPUDevice, textures: Set<GPUTexture>)
           }
         }
         originalDestroyBuffer.call(buffer);
-
         textureManager.setImageData(textureManager.getId(texture), dst);
       });
     });
@@ -882,11 +909,14 @@ GPUQueue.prototype.submit = function (commandBuffers: GPUCommandBuffer[]) {
     }
   }
 
-  commandBuffers = commandBuffers.slice();
+  // Process this costly frame buffer capture only for the first 100 frames for now
+  if (frameNum <= 100) {
+    commandBuffers = commandBuffers.slice();
 
-  // Add a command to read output textures
-  // TODO: Don't use ! because device can be already destroyed?
-  commandBuffers.push(createReadTexturesCommand(findParentDevice(this)!, textures));
+    // Add a command to read output textures
+    // TODO: Don't use ! because device can be already destroyed?
+    commandBuffers.push(createReadTexturesCommand(findParentDevice(this)!, textures));
+  }
 
   return originalSubmit.call(this, commandBuffers);
 };
@@ -911,13 +941,6 @@ GPUQueue.prototype.writeBuffer = function(
     args.push(size);
   }
   historyManager.add('GPUQueue.writeBuffer', getStackTraceAsString(this.writeBuffer), args);
-
-  /*
-  dispatchCustomEvent('webgpu-devtools-buffer-data', {
-    data: data
-  });
-  */
-
   return originalWriteBuffer.call(this, buffer, bufferOffset, data, dataOffset, size);
 };
 
