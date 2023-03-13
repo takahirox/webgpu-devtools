@@ -60,6 +60,10 @@ class ResourceIdManager<T extends object> {
 	}
     return this.id2obj.get(id);
   }
+
+  ids(): IterableIterator<ResourceId> {
+    return this.id2obj.keys();
+  }
 }
 
 type BaseProperties = {
@@ -76,17 +80,25 @@ abstract class BaseResourceManager<T extends object, U extends BaseProperties> {
     this.properties = new Map();
   }
 
-  protected register(obj: T, properties: U): number {
+  protected register(obj: T, properties: U): ResourceId {
     const id = this.idManager.allocate(obj);
     // TODO: Do deep copy the properties?
     this.properties.set(id, properties);
     return id;
   }
 
-  delete(id: number): void {
+  delete(id: ResourceId): void {
     const obj = this.idManager.getObject(id);
     this.idManager.deallocate(obj);
     this.properties.delete(id);
+  }
+
+  getObject(id: ResourceId): T {
+    return this.idManager.getObject(id);
+  }
+
+  getId(obj: T): ResourceId {
+    return this.idManager.getId(obj);
   }
 
   getProperties(id: ResourceId): U {
@@ -96,8 +108,8 @@ abstract class BaseResourceManager<T extends object, U extends BaseProperties> {
     return this.properties.get(id);
   }
 
-  getId(obj: T): ResourceId {
-    return this.idManager.getId(obj);
+  ids(): IterableIterator<ResourceId> {
+    return this.idManager.ids();
   }
 }
 
@@ -128,7 +140,7 @@ class GPUDeviceResourceManager extends BaseResourceManager<GPUDevice, GPUDeviceP
   add(obj: GPUDevice, stackTrace: string, descriptor?: GPUDeviceDescriptor): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor
+      descriptor
     });
   }
 }
@@ -141,29 +153,44 @@ class GPUBufferResourceManager extends BaseResourceManager<GPUBuffer, GPUBufferP
   add(obj: GPUBuffer, stackTrace: string, descriptor: GPUBufferDescriptor): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor
+      descriptor
     });
   }
 }
 
 type GPUTextureProperties = BaseProperties & {
-  descriptor: GPUTextureDescriptor;
-  isCanvasContextCurrentTexture: boolean;
+  // Defined only if texture is created with conetxt.getCurrentTexture()
+  canvasContext?: GPUCanvasContext;
+  // Undefined if texture is created with conetxt.getCurrentTexture()
+  descriptor?: GPUTextureDescriptor;
+  imageData?: ImageData;
 };
 
 class GPUTextureResourceManager extends BaseResourceManager<GPUTexture, GPUTextureProperties> {
   add(
     obj: GPUTexture,
     stackTrace: string,
-    isCanvasContextCurrentTexture: boolean,
-    // No descriptor if currentTexture
-    descriptor?: GPUTextureDescriptor
+    descriptor: GPUTextureDescriptor
   ): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor,
-      isCanvasContextCurrentTexture: isCanvasContextCurrentTexture
+      descriptor
     });
+  }
+
+  addCanvasTexture(
+    obj: GPUTexture,
+    stackTrace: string,
+    canvasContext: GPUCanvasContext
+  ): ResourceId {
+    return this.register(obj, {
+      creationStackTrace: stackTrace,
+      canvasContext
+    });
+  }
+
+  setImageData(id: ResourceId, imageData: ImageData): void {
+    this.getProperties(id).imageData = imageData;
   }
 }
 
@@ -181,8 +208,8 @@ class GPUTextureViewResourceManager extends BaseResourceManager<GPUTextureView, 
   ): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor,
-      parentTexture: parentTexture
+      descriptor,
+      parentTexture
     });
   }
 }
@@ -195,7 +222,7 @@ class GPUShaderModuleResourceManager extends BaseResourceManager<GPUShaderModule
   add(obj: GPUShaderModule, stackTrace: string, descriptor: GPUShaderModuleDescriptor): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor
+      descriptor
     });
   }
 }
@@ -208,7 +235,7 @@ class GPURenderPipelineResourceManager extends BaseResourceManager<GPURenderPipe
   add(obj: GPURenderPipeline, stackTrace: string, descriptor: GPURenderPipelineDescriptor): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor
+      descriptor
     });
   }
 }
@@ -230,7 +257,7 @@ class GPUCommandEncoderResourceManager extends BaseResourceManager<GPUCommandEnc
   add(obj: GPUCommandEncoder, stackTrace: string, descriptor?: GPUCommandEncoderDescriptor): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor,
+      descriptor,
       renderPasses: [],
       state: EncoderState.open
     });
@@ -259,8 +286,8 @@ class GPUCommandBufferResourceManager extends BaseResourceManager<GPUCommandBuff
   ): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor,
-      parentEncoder: parentEncoder
+      descriptor,
+      parentEncoder
     });
   }
 }
@@ -288,8 +315,8 @@ class GPURenderPassEncoderResourceManager extends BaseResourceManager<GPURenderP
   ): ResourceId {
     return this.register(obj, {
       creationStackTrace: stackTrace,
-      descriptor: descriptor,
-      parentEncoder: parentEncoder,
+      descriptor,
+      parentEncoder,
       state: EncoderState.open,
       viewport: null
     });
@@ -304,14 +331,8 @@ class GPURenderPassEncoderResourceManager extends BaseResourceManager<GPURenderP
     minDepth: number,
     maxDepth: number
   ): void {
-    this.getProperties(id).viewport = {
-      x: x,
-      y: y,
-      width: width,
-      height: height,
-      minDepth: minDepth,
-      maxDepth: maxDepth
-	};
+    this.getProperties(id).viewport =
+      { x, y, width, height, minDepth, maxDepth };
   }
 
   setState(id: ResourceId, state: EncoderState): void {
@@ -334,11 +355,7 @@ class HistoryManager {
   }
 
   add(name: string, stackTrace: string, args?: any[]) {
-    this.histories.push({
-      args: args,
-      name: name,
-      stackTrace: stackTrace
-    });
+    this.histories.push({ args, name, stackTrace });
   }
 
 /*
@@ -434,12 +451,15 @@ class StatisticsAnalyzer {
 //   - Display texture image and frame(drawing) buffer
 
 // TODO: Avoid any
+/*
 const dispatchCustomEvent = (type: string, detail: any) => {
   window.dispatchEvent(new CustomEvent(type, {
     // TODO: use cloneInto for Firefox
     detail: detail
   }));
+  dispatchEventCount++;
 };
+*/
 
 const contextManager = new GPUCanvasContextResourceManager();
 const deviceManager = new GPUDeviceResourceManager();
@@ -453,10 +473,6 @@ const commandEncoderManager = new GPUCommandEncoderResourceManager();
 const commandBufferManager = new GPUCommandBufferResourceManager();
 const historyManager = new HistoryManager();
 const statisticsAnalyzer = new StatisticsAnalyzer();
-
-const textureProperties = new WeakMap<GPUTexture, {
-  imageData: ImageData | null
-}>();
 
 const originalGetContext = HTMLCanvasElement.prototype.getContext;
 HTMLCanvasElement.prototype.getContext = function (contextType: string, contextAttributes?: Object) {
@@ -496,6 +512,12 @@ OffscreenCanvas.prototype.getContext = function (contextType: string, contextAtt
 
 const originalConfigure = GPUCanvasContext.prototype.configure;
 GPUCanvasContext.prototype.configure = function (configuration: GPUCanvasConfiguration) {
+  // TODO: Write comment and concern
+  if (configuration.usage === undefined) {
+    configuration.usage = GPUTextureUsage.RENDER_ATTACHMENT;
+  }
+  configuration.usage |= GPUTextureUsage.COPY_SRC;
+
   const args = [];
   args.push(configuration);
   historyManager.add('GPUCanvasContext.configure', getStackTraceAsString(this.configure), args);
@@ -506,6 +528,7 @@ GPUCanvasContext.prototype.configure = function (configuration: GPUCanvasConfigu
 const originalUnconfigure = GPUCanvasContext.prototype.unconfigure;
 GPUCanvasContext.prototype.unconfigure = function () {
   historyManager.add('GPUCanvasContext.unconfigure', getStackTraceAsString(this.unconfigure));
+  contextManager.setConfiguration(contextManager.getId(this), null);
   return originalUnconfigure.call(this);
 };
 
@@ -514,7 +537,7 @@ GPUCanvasContext.prototype.getCurrentTexture = function () {
   const stackTrace = getStackTraceAsString(this.getCurrentTexture);
   historyManager.add('GPUCanvasContext.getCurrentTexture', stackTrace);
   const texture = originalGetCurrentTexture.call(this);
-  textureManager.add(texture, stackTrace, true);
+  textureManager.addCanvasTexture(texture, stackTrace, this);
   return texture;
 };
 
@@ -719,13 +742,129 @@ GPURenderPassEncoder.prototype.end = function () {
   return result;
 };
 
+const originalOnSubmittedWorkDone = GPUQueue.prototype.onSubmittedWorkDone;
+GPUQueue.prototype.onSubmittedWorkDone = function () {
+  historyManager.add('GPUQueue.onSubmittedWorkDone', getStackTraceAsString(this.onSubmittedWorkDone));
+  return originalOnSubmittedWorkDone.call(this);
+};
+
+const getTexelByteSize = (format: GPUTextureFormat): number => {
+  // TODO: Implement property
+  switch (format) {
+    case 'bgra8unorm':
+      return 4;
+    case 'rgba16float':
+      return 8;
+  }
+  return 4;
+};
+
+// TODO: Implement properly
+// TODO: Optimize
+// TODO: Support depth
+const copyTexel = (
+  dst: Uint8ClampedArray,
+  src: Uint8ClampedArray,
+  x: number,
+  y: number,
+  width: number,
+  bytesPerRow: number,
+  texelByteSize: number,
+  format: GPUTextureFormat
+): void => {
+  switch (format) {
+    case 'bgra8unorm':
+      dst[y * width * texelByteSize + x * texelByteSize + 2] = src[y * bytesPerRow + x * texelByteSize + 0];
+      dst[y * width * texelByteSize + x * texelByteSize + 1] = src[y * bytesPerRow + x * texelByteSize + 1];
+      dst[y * width * texelByteSize + x * texelByteSize + 0] = src[y * bytesPerRow + x * texelByteSize + 2];
+      dst[y * width * texelByteSize + x * texelByteSize + 3] = src[y * bytesPerRow + x * texelByteSize + 3];
+      break;
+    default:
+      for (let i = 0; i < texelByteSize; i++) {
+        dst[y * width * texelByteSize + x * texelByteSize + i] = src[y * bytesPerRow + x * texelByteSize + i];
+      }
+  }
+};
+
+const createReadTexturesCommand = (device: GPUDevice, textures: Set<GPUTexture>): GPUCommandBuffer => {
+  const commandEncoder = originalCreateCommandEncoder.call(device);
+
+  for (const texture of textures) {
+    const textureProperties = textureManager.getProperties(textureManager.getId(texture));
+
+    let width: number;
+    let height: number;
+    let depthOrArrayLayers: number;
+    let texelByteSize: number;
+    let textureFormat: GPUTextureFormat;
+
+    if (textureProperties.canvasContext !== undefined) {
+      const { canvasContext } = textureProperties;
+      // TODO: Avoid !
+      ({ format: textureFormat } = contextManager.getProperties(contextManager.getId(canvasContext)).configuration!);
+      texelByteSize = getTexelByteSize(textureFormat);
+      ({ width, height } = canvasContext.canvas);
+      depthOrArrayLayers = 1;
+    } else {
+      ({ format: textureFormat } = textureProperties.descriptor);
+      texelByteSize = getTexelByteSize(textureFormat);
+      // Why cast needed?
+      ({ width, height, depthOrArrayLayers } = textureProperties.descriptor.size as GPUExtent3DDict);
+    }
+
+    // bytesPerRow must be multiply of 256
+    const bytesPerRow = (width * texelByteSize + 255) & ~0xff;
+    const bufferSize = bytesPerRow * height * depthOrArrayLayers;
+    const copySize = { width, height, depthOrArrayLayers };
+
+    const buffer = originalCreateBuffer.call(device, {
+      size: bufferSize,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ
+    });
+    // TODO: Use original function if copyTextureToBuffer is hooked.
+    commandEncoder.copyTextureToBuffer(
+      { texture },
+      { buffer, bytesPerRow, rowsPerImage: height },
+      copySize
+    );
+    originalOnSubmittedWorkDone.call(device.queue).then(() => {
+      buffer.mapAsync(GPUMapMode.READ).then(() => {
+        // TODO: Optimize if possible
+        const src = new Uint8ClampedArray(buffer.getMappedRange());
+        const dst = new ImageData(width, height);
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            copyTexel(dst.data, src, x, y, width, bytesPerRow,
+              texelByteSize, textureFormat);
+          }
+        }
+        originalDestroyBuffer.call(buffer);
+
+        textureManager.setImageData(textureManager.getId(texture), dst);
+      });
+    });
+  }
+  return originalFinish.call(commandEncoder);
+};
+
+const findParentDevice = (queue: GPUQueue): GPUDevice | null => {
+  // Assumes devices are not created so many.
+  for (const id of deviceManager.ids()) {
+    const device = deviceManager.getObject(id);
+    if (device.queue === queue) {
+      return device;
+    }
+  }
+  return null;
+};
+
 const originalSubmit = GPUQueue.prototype.submit;
 GPUQueue.prototype.submit = function (commandBuffers: GPUCommandBuffer[]) {
   const args = [];
   args.push(commandBuffers);
   historyManager.add('GPUQueue.submit', getStackTraceAsString(this.submit), args);
-  const result = originalSubmit.call(this, commandBuffers);
 
+  // Find output textures
   const textures = new Set<GPUTexture>();
   for (const buffer of commandBuffers) {
     const { parentEncoder } = commandBufferManager.getProperties(commandBufferManager.getId(buffer));
@@ -743,11 +882,13 @@ GPUQueue.prototype.submit = function (commandBuffers: GPUCommandBuffer[]) {
     }
   }
 
-  this.onSubmittedWorkDone().then(() => {
-    console.log(textures);
-  });
+  commandBuffers = commandBuffers.slice();
 
-  return result;
+  // Add a command to read output textures
+  // TODO: Don't use ! because device can be already destroyed?
+  commandBuffers.push(createReadTexturesCommand(findParentDevice(this)!, textures));
+
+  return originalSubmit.call(this, commandBuffers);
 };
 
 const originalWriteBuffer = GPUQueue.prototype.writeBuffer;
@@ -771,9 +912,11 @@ GPUQueue.prototype.writeBuffer = function(
   }
   historyManager.add('GPUQueue.writeBuffer', getStackTraceAsString(this.writeBuffer), args);
 
+  /*
   dispatchCustomEvent('webgpu-devtools-buffer-data', {
     data: data
   });
+  */
 
   return originalWriteBuffer.call(this, buffer, bufferOffset, data, dataOffset, size);
 };
@@ -805,16 +948,9 @@ GPUQueue.prototype.copyExternalImageToTexture = function (
   args.push(copySize);
   historyManager.add('GPUQueue.copyExternalImageToTexture', getStackTraceAsString(this.copyExternalImageToTexture), args);
 
-  const imageData = cloneImageSourceAsImageData(source.source);
-
   const texture = destination.texture;
-
-  textureProperties.get(texture)!.imageData = imageData;
-  console.log(textureProperties);
-  dispatchCustomEvent('webgpu-devtools-texture-image', {
-    imageData: imageData
-  });
-
+  const imageData = cloneImageSourceAsImageData(source.source);
+  textureManager.setImageData(textureManager.getId(texture), imageData);
   return originalCopyExternalImageToTexture.call(this, source, destination, copySize);
 };
 
@@ -887,10 +1023,7 @@ GPUDevice.prototype.createTexture = function (descriptor: GPUTextureDescriptor) 
   const stackTrace = getStackTraceAsString(this.createTexture);
   historyManager.add('GPUDevice.createTexture', stackTrace, args);
   const texture = originalCreateTexture.call(this, descriptor);
-  textureManager.add(texture, stackTrace, false, descriptor);
-  textureProperties.set(texture, {
-    imageData: null	  
-  });
+  textureManager.add(texture, stackTrace, descriptor);
   return texture;
 };
 
@@ -926,7 +1059,7 @@ GPUTexture.prototype.createView = function (descriptor?: Object) {
 const originalDestroyTexture = GPUTexture.prototype.destroy;
 GPUTexture.prototype.destroy = function () {
   historyManager.add('GPUTexture.destroy', getStackTraceAsString(this.destroy));
+  const result = originalDestroyTexture.call(this);
   textureManager.delete(textureManager.getId(this));
-  textureProperties.delete(this);
-  return originalDestroyTexture.call(this);
+  return result;
 };
