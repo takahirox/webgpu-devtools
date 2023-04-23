@@ -101,6 +101,8 @@ class GPUTextureResourceManager
       usage: texture.usage,
       creationFrameNum: properties.creationFrameNum,
       creationStackTrace: properties.creationStackTrace,
+      deletionFrameNum: properties.deletionFrameNum,
+      deletionStackTrace: properties.deletionStackTrace,
       destroyed: properties.destroyed,
       errorMessage: properties.errorMessage,
       content: properties.content

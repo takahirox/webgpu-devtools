@@ -126,7 +126,9 @@ const createGPUBufferElement = (buffer: SerializedBuffer, index: number): HTMLLI
         items.push(createGPUBufferContentElement(buffer));
         break;
       case 'creationStackTrace':
-        items.push(createStackTraceElement(buffer.creationStackTrace, 'creationStackTrace:'));
+      case 'deletionStackTrace':
+        // TODO: Avoid cast if possible
+        items.push(createStackTraceElement(buffer[key as keyof SerializedBuffer] as string[], `${key}:`));
         break;
       case 'descriptor':
         items.push(createGPUBufferDescriptorElement(buffer.descriptor));

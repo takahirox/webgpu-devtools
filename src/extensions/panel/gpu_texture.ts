@@ -78,8 +78,8 @@ export const createTextureCommonElement = (
         a.appendChild(img);
         li.appendChild(a);
       });
-    } else if (key === 'creationStackTrace') {
-      li.appendChild(createStackTraceElement(value as string[], 'creationStackTrace:'));
+    } else if (key === 'creationStackTrace' || key === 'deletionStackTrace') {
+      li.appendChild(createStackTraceElement(value as string[], `${key}:`));
     } else {
       li.innerText = `${key}: ${stringify(value)}`;
       if (key === 'usage') {

@@ -11445,7 +11445,9 @@ const createGPUBufferElement = (buffer, index) => {
                 items.push(createGPUBufferContentElement(buffer));
                 break;
             case 'creationStackTrace':
-                items.push((0,_stacktrace__WEBPACK_IMPORTED_MODULE_2__.createStackTraceElement)(buffer.creationStackTrace, 'creationStackTrace:'));
+            case 'deletionStackTrace':
+                // TODO: Avoid cast if possible
+                items.push((0,_stacktrace__WEBPACK_IMPORTED_MODULE_2__.createStackTraceElement)(buffer[key], `${key}:`));
                 break;
             case 'descriptor':
                 items.push(createGPUBufferDescriptorElement(buffer.descriptor));
@@ -12443,8 +12445,8 @@ const createTextureCommonElement = (texture, label, hideByDefault = true) => {
                 li.appendChild(a);
             });
         }
-        else if (key === 'creationStackTrace') {
-            li.appendChild((0,_stacktrace__WEBPACK_IMPORTED_MODULE_2__.createStackTraceElement)(value, 'creationStackTrace:'));
+        else if (key === 'creationStackTrace' || key === 'deletionStackTrace') {
+            li.appendChild((0,_stacktrace__WEBPACK_IMPORTED_MODULE_2__.createStackTraceElement)(value, `${key}:`));
         }
         else {
             li.innerText = `${key}: ${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.stringify)(value)}`;
