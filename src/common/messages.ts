@@ -149,7 +149,6 @@ export type SerializedShaderModule = BaseSerialized & {
 export type SerializedTexture = BaseSerialized & {
   id: ResourceId;
   label: string;
-  alive: boolean;
   descriptor: object; // TODO: Fix me
   width: number;
   height: number;

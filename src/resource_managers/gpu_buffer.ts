@@ -131,6 +131,7 @@ class GPUBufferResourceManager
       mapState: buffer.mapState,
       creationFrameNum: properties.creationFrameNum,
       creationStackTrace: properties.creationStackTrace,
+      destroyed: properties.destroyed,
       errorMessage: properties.errorMessage,
       content: properties.content
     };

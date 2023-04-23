@@ -96,8 +96,9 @@ function destroy(
     arguments,
     stackTrace,
     () => {
-      gpuBufferManager.unmap(gpuBufferManager.getId(this));
-      gpuBufferManager.delete(gpuBufferManager.getId(this));
+      const id = gpuBufferManager.getId(this);
+      gpuBufferManager.unmap(id);
+      gpuBufferManager.destroy(id);
     }
   );
 }

@@ -90,7 +90,6 @@ class GPUTextureResourceManager
     return {
       id: id,
       label: texture.label,
-      alive: true, // TODO: Implement
       descriptor: serializeDescriptor(properties.descriptor),
       width: texture.width,
       height: texture.height,
@@ -102,6 +101,8 @@ class GPUTextureResourceManager
       usage: texture.usage,
       creationFrameNum: properties.creationFrameNum,
       creationStackTrace: properties.creationStackTrace,
+      destroyed: properties.destroyed,
+      errorMessage: properties.errorMessage,
       content: properties.content
     };
   }
