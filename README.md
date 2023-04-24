@@ -3,7 +3,7 @@
 WebGPU devtools is a [Web browser extension](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)
 that helps debug WebGPU applications by monitoring WebGPU usage.
 
-**Note:** This project is still at alpha stage.
+**Note:** This project is still in the alpha stage.
 The WebGPU devtools may be unstable and buggy now.
 See the GitHub issues and inline random TODO comments for things that need work.
 
@@ -94,6 +94,14 @@ If you face this problem, try to reload the panel and application.
 Refer to [#9](https://github.com/takahirox/webgpu-devtools/issues/9) for details.
 
 Also see [the GitHub issues](https://github.com/takahirox/webgpu-devtools/issues) for others.
+
+## Contributions
+
+This project is still in the alpha stage. There are a lot of things that need to be done.
+Contributions are very welcome. If you look for any issues to work on, find inline TODO comments
+or issues at [the GitHub issues](https://github.com/takahirox/webgpu-devtools/issues).
+
+Also feel free to post any bug reports or feature requests at [the GitHub issues](https://github.com/takahirox/webgpu-devtools/issues).
 
 ## Disclaimer
 
