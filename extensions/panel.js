@@ -11352,6 +11352,7 @@ const buffersTitleElement = document.getElementById('buffersTitle');
 const buffersSignElement = document.getElementById('buffersSign');
 const buffersNumElement = document.getElementById('buffersNum');
 const buffersListElement = document.getElementById('buffersList');
+const buffersMemoryUsageElement = document.getElementById('buffersMemoryUsage');
 (0,_hidable__WEBPACK_IMPORTED_MODULE_1__.setupHidableList)(buffersElement, buffersTitleElement, buffersListElement, buffersSignElement);
 const GPUBufferUsageFlagNames = [
     'MAP_READ',
@@ -11468,7 +11469,9 @@ const createGPUBufferElement = (buffer, index) => {
                 break;
         }
     }
-    return (0,_hidable__WEBPACK_IMPORTED_MODULE_1__.createHidableListElement)(`Buffers[${index}] id: ${buffer.id}, ${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.stringify)(buffer.label)}`, items, `GPUBuffer_${buffer.id}`);
+    const destroyedLabel = buffer.destroyed ? 'destroyed' : '';
+    const memoryUsage = `${buffer.descriptor.size.toLocaleString('en-us')} bytes`;
+    return (0,_hidable__WEBPACK_IMPORTED_MODULE_1__.createHidableListElement)(`Buffers[${index}] id: ${buffer.id}, ${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.stringify)(buffer.label)}, ${memoryUsage} ${destroyedLabel}`, items, `GPUBuffer_${buffer.id}`);
 };
 const createGPUBufferElementById = (id) => {
     if (!gpuBufferMap.has(id)) {
@@ -11496,12 +11499,28 @@ const highlightLikelyInvalidBuffers = () => {
         buffersListElement.getElementsByClassName('errorLeaf')[0].classList.remove('errorLeaf');
     }
 };
+const updateMemoryUsage = () => {
+    let used = 0;
+    let freed = 0;
+    for (const buffer of gpuBuffers) {
+        const bytes = buffer.descriptor.size;
+        if (buffer.destroyed) {
+            freed += bytes;
+        }
+        else {
+            used += bytes;
+        }
+    }
+    buffersMemoryUsageElement.innerText =
+        `(${used.toLocaleString('en-us')} bytes used, ${freed.toLocaleString('en-us')} bytes freed)`;
+};
 const addGPUBuffer = (buffer) => {
     gpuBuffers.push(buffer);
     const index = gpuBuffers.length - 1;
     gpuBufferMap.set(buffer.id, index);
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(buffersNumElement, gpuBuffers.length);
     buffersListElement.appendChild(createGPUBufferElement(buffer, index));
+    updateMemoryUsage();
     highlightLikelyInvalidBuffers();
 };
 const resetGPUBuffers = () => {
@@ -11509,6 +11528,7 @@ const resetGPUBuffers = () => {
     gpuBufferMap.clear();
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(buffersNumElement, gpuBuffers.length);
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.removeChildElements)(buffersListElement);
+    buffersMemoryUsageElement.innerText = '';
 };
 
 

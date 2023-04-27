@@ -18,6 +18,7 @@ const buffersTitleElement = document.getElementById('buffersTitle') as HTMLSpanE
 const buffersSignElement = document.getElementById('buffersSign') as HTMLSpanElement;
 const buffersNumElement = document.getElementById('buffersNum') as HTMLSpanElement;
 const buffersListElement = document.getElementById('buffersList') as HTMLUListElement;
+const buffersMemoryUsageElement = document.getElementById('buffersMemoryUsage') as HTMLSpanElement;
 
 setupHidableList(buffersElement, buffersTitleElement,
                  buffersListElement, buffersSignElement);
@@ -150,8 +151,11 @@ const createGPUBufferElement = (buffer: SerializedBuffer, index: number): HTMLLI
     }
   }
 
+  const destroyedLabel = buffer.destroyed ? 'destroyed' : '';
+  const memoryUsage = `${buffer.descriptor.size.toLocaleString('en-us')} bytes`;
+
   return createHidableListElement(
-    `Buffers[${index}] id: ${buffer.id}, ${stringify(buffer.label)}`,
+`Buffers[${index}] id: ${buffer.id}, ${stringify(buffer.label)}, ${memoryUsage} ${destroyedLabel}`,
     items, `GPUBuffer_${buffer.id}`);
 };
 
@@ -184,6 +188,23 @@ const highlightLikelyInvalidBuffers = (): void => {
   }
 };
 
+const updateMemoryUsage = (): void => {
+  let used = 0;
+  let freed = 0;
+
+  for (const buffer of gpuBuffers) {
+    const bytes = buffer.descriptor.size;
+    if (buffer.destroyed) {
+      freed += bytes;
+    } else {
+      used += bytes;
+    }
+  }
+
+  buffersMemoryUsageElement.innerText =
+    `(${used.toLocaleString('en-us')} bytes used, ${freed.toLocaleString('en-us')} bytes freed)`;
+};
+
 export const addGPUBuffer = (buffer: SerializedBuffer): void => {
   gpuBuffers.push(buffer);
   const index = gpuBuffers.length - 1;
@@ -192,6 +213,7 @@ export const addGPUBuffer = (buffer: SerializedBuffer): void => {
   setResourceNumElement(buffersNumElement, gpuBuffers.length);
   buffersListElement.appendChild(createGPUBufferElement(buffer, index));
 
+  updateMemoryUsage();
   highlightLikelyInvalidBuffers();
 };
 
@@ -201,4 +223,6 @@ export const resetGPUBuffers = (): void => {
 
   setResourceNumElement(buffersNumElement, gpuBuffers.length);
   removeChildElements(buffersListElement);
+
+  buffersMemoryUsageElement.innerText = '';
 };
