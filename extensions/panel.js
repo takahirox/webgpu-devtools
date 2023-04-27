@@ -12413,6 +12413,7 @@ const texturesTitleElement = document.getElementById('texturesTitle');
 const texturesSignElement = document.getElementById('texturesSign');
 const texturesNumElement = document.getElementById('texturesNum');
 const texturesListElement = document.getElementById('texturesList');
+const texturesMemoryUsageElement = document.getElementById('texturesMemoryUsage');
 (0,_hidable__WEBPACK_IMPORTED_MODULE_0__.setupHidableList)(texturesElement, texturesTitleElement, texturesListElement, texturesSignElement);
 const GPUTextureUsageFlagNames = [
     'COPY_SRC',
@@ -12476,7 +12477,9 @@ const createTextureCommonElement = (texture, label, hideByDefault = true) => {
         }
         items.push(li);
     }
-    return (0,_hidable__WEBPACK_IMPORTED_MODULE_0__.createHidableListElement)(label, items, `GPUTexture_${texture.id}`, hideByDefault);
+    const destroyedLabel = texture.destroyed ? 'destroyed' : '';
+    const memoryUsage = `${calculateSize(texture).toLocaleString('en-us')} bytes`;
+    return (0,_hidable__WEBPACK_IMPORTED_MODULE_0__.createHidableListElement)(`${label}, ${memoryUsage} ${destroyedLabel}`, items, `GPUTexture_${texture.id}`, hideByDefault);
 };
 /*
  * <texture-common texutre=${texture} label=`Textures[${index}]` />
@@ -12494,18 +12497,41 @@ const createGPUTextureElementById = (id) => {
     const texture = gpuTextures[index];
     return createGPUTextureElement(texture, index);
 };
+const calculateSize = (texture) => {
+    const { width, height, depthOrArrayLayers } = texture;
+    // TODO: Calculate the size more accurately.
+    //       Probably mipLevelCount and format need to be taken into account?
+    return width * height * depthOrArrayLayers;
+};
+const updateMemoryUsage = () => {
+    let used = 0;
+    let freed = 0;
+    for (const texture of gpuTextures) {
+        const bytes = calculateSize(texture);
+        if (texture.destroyed) {
+            freed += bytes;
+        }
+        else {
+            used += bytes;
+        }
+    }
+    texturesMemoryUsageElement.innerText =
+        `(${used.toLocaleString('en-us')} bytes used, ${freed.toLocaleString('en-us')} bytes freed)`;
+};
 const addGPUTexture = (texture) => {
     gpuTextures.push(texture);
     const index = gpuTextures.length - 1;
     gpuTextureMap.set(texture.id, index);
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(texturesNumElement, gpuTextures.length);
     texturesListElement.appendChild(createGPUTextureElement(texture, index));
+    updateMemoryUsage();
 };
 const resetGPUTextures = () => {
     gpuTextures.length = 0;
     gpuTextureMap.clear();
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(texturesNumElement, gpuTextures.length);
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.removeChildElements)(texturesListElement);
+    texturesMemoryUsageElement.innerText = '';
 };
 
 

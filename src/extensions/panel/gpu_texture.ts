@@ -17,6 +17,7 @@ const texturesTitleElement = document.getElementById('texturesTitle') as HTMLSpa
 const texturesSignElement = document.getElementById('texturesSign') as HTMLSpanElement;
 const texturesNumElement = document.getElementById('texturesNum') as HTMLSpanElement;
 const texturesListElement = document.getElementById('texturesList') as HTMLUListElement;
+const texturesMemoryUsageElement = document.getElementById('texturesMemoryUsage') as HTMLSpanElement;
 
 setupHidableList(texturesElement, texturesTitleElement,
                  texturesListElement, texturesSignElement);
@@ -89,7 +90,11 @@ export const createTextureCommonElement = (
     items.push(li);
   }
 
-  return createHidableListElement(label, items, `GPUTexture_${texture.id}`, hideByDefault);
+  const destroyedLabel = texture.destroyed ? 'destroyed' : '';
+  const memoryUsage = `${calculateSize(texture).toLocaleString('en-us')} bytes`;
+
+  return createHidableListElement(`${label}, ${memoryUsage} ${destroyedLabel}`,
+    items, `GPUTexture_${texture.id}`, hideByDefault);
 };
 
 /*
@@ -111,6 +116,30 @@ export const createGPUTextureElementById = (id: ResourceId): HTMLLIElement => {
   return createGPUTextureElement(texture, index)
 };
 
+const calculateSize = (texture: SerializedTexture): number => {
+  const { width, height, depthOrArrayLayers } = texture;
+  // TODO: Calculate the size more accurately.
+  //       Probably mipLevelCount and format need to be taken into account?
+  return width * height * depthOrArrayLayers;
+};
+
+const updateMemoryUsage = (): void => {
+  let used = 0;
+  let freed = 0;
+
+  for (const texture of gpuTextures) {
+    const bytes = calculateSize(texture);
+    if (texture.destroyed) {
+      freed += bytes;
+    } else {
+      used += bytes;
+    }
+  }
+
+  texturesMemoryUsageElement.innerText =
+    `(${used.toLocaleString('en-us')} bytes used, ${freed.toLocaleString('en-us')} bytes freed)`;
+};
+
 export const addGPUTexture = (texture: SerializedTexture): void => {
   gpuTextures.push(texture);
   const index = gpuTextures.length - 1;
@@ -118,6 +147,8 @@ export const addGPUTexture = (texture: SerializedTexture): void => {
 
   setResourceNumElement(texturesNumElement, gpuTextures.length);
   texturesListElement.appendChild(createGPUTextureElement(texture, index));
+
+  updateMemoryUsage();
 };
 
 export const resetGPUTextures = (): void => {
@@ -126,4 +157,6 @@ export const resetGPUTextures = (): void => {
 
   setResourceNumElement(texturesNumElement, gpuTextures.length);
   removeChildElements(texturesListElement);
+
+  texturesMemoryUsageElement.innerText = '';
 };
