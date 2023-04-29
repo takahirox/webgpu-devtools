@@ -155,7 +155,7 @@ const createGPUBufferElement = (buffer: SerializedBuffer, index: number): HTMLLI
   const memoryUsage = `${buffer.descriptor.size.toLocaleString('en-us')} bytes`;
 
   return createHidableListElement(
-`Buffers[${index}] id: ${buffer.id}, ${stringify(buffer.label)}, ${memoryUsage} ${destroyedLabel}`,
+    `Buffers[${index}] id: ${buffer.id}, ${stringify(buffer.label)}, ${memoryUsage} ${destroyedLabel}`,
     items, `GPUBuffer_${buffer.id}`);
 };
 

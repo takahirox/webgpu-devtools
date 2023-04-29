@@ -49,8 +49,10 @@ const createGPUDeviceElement = (device: SerializedGPUDevice, index: number): HTM
     }
   }
 
+  const destroyedLabel = device.destroyed ? 'destroyed' : '';
+
   return createHidableListElement(
-    `GPUDevices[${index}] id: ${device.id}, ${stringify(device.label)}`,
+    `GPUDevices[${index}] id: ${device.id}, ${stringify(device.label)} ${destroyedLabel}`,
     items, `GPUDevice_${device.id}`);
 };
 

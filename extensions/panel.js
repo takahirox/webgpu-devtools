@@ -11865,7 +11865,8 @@ const createGPUDeviceElement = (device, index) => {
                 break;
         }
     }
-    return (0,_hidable__WEBPACK_IMPORTED_MODULE_1__.createHidableListElement)(`GPUDevices[${index}] id: ${device.id}, ${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.stringify)(device.label)}`, items, `GPUDevice_${device.id}`);
+    const destroyedLabel = device.destroyed ? 'destroyed' : '';
+    return (0,_hidable__WEBPACK_IMPORTED_MODULE_1__.createHidableListElement)(`GPUDevices[${index}] id: ${device.id}, ${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.stringify)(device.label)} ${destroyedLabel}`, items, `GPUDevice_${device.id}`);
 };
 const addGPUDevice = (device) => {
     devices.push(device);
