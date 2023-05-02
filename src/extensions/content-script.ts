@@ -161,6 +161,17 @@ if ('gpu' in navigator) {
   );
 
   window.addEventListener(
+    Actions.GpuRenderBundleEncoder,
+    (event: CustomEvent): void => {
+      port.postMessage({
+        action: Actions.GpuRenderBundleEncoder,
+        renderBundleEncoder: event.detail.renderBundleEncoder
+      });
+    },
+    false
+  );
+
+  window.addEventListener(
     Actions.GpuRenderPassEncoder,
     (event: CustomEvent): void => {
       port.postMessage({

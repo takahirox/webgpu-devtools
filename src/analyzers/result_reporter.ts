@@ -13,6 +13,7 @@ import { gpuComputePipelineManager } from "../resource_managers/gpu_compute_pipe
 import { gpuDeviceManager } from "../resource_managers/gpu_device";
 import { gpuPipelineLayoutManager } from "../resource_managers/gpu_pipeline_layout";
 import { gpuQueueManager } from "../resource_managers/gpu_queue";
+import { gpuRenderBundleEncoderManager } from "../resource_managers/gpu_render_bundle_encoder";
 import { gpuRenderPassEncoderManager } from "../resource_managers/gpu_render_pass_encoder";
 import { gpuRenderPipelineManager } from "../resource_managers/gpu_render_pipeline";
 import { gpuSamplerManager } from "../resource_managers/gpu_sampler";
@@ -120,6 +121,14 @@ class ResultReporter {
     for (const id of gpuQueueManager.ids()) {
       dispatchCustomEvent(Actions.GpuQueue, {
         queue: gpuQueueManager.serialize(id)
+      });
+    }
+  }
+
+  private reportGPURenderBundleEncoders(): void {
+    for (const id of gpuRenderBundleEncoderManager.ids()) {
+      dispatchCustomEvent(Actions.GpuRenderBundleEncoder, {
+        renderBundleEncoder: gpuRenderBundleEncoderManager.serialize(id)
       });
     }
   }
@@ -254,6 +263,7 @@ class ResultReporter {
     this.reportGPUDevices();
     this.reportGPUPipelineLayouts();
     this.reportGPUQueues();
+    this.reportGPURenderBundleEncoders();
     this.reportGPURenderPassEncoders();
     this.reportGPURenderPipelines();
     this.reportGPUSamplers();

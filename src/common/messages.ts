@@ -17,6 +17,7 @@ export const Actions = {
   GpuDevice: prefix + 'gpu_device',
   GpuPipelineLayout: prefix + 'gpu_pipeline_layout',
   GpuQueue: prefix + 'gpu_queue',
+  GpuRenderBundleEncoder: prefix + 'gpu_render_bundle_encoder',
   GpuRenderPassEncoder: prefix + 'gpu_render_pass_encoder',
   GpuRenderPipeline: prefix + 'gpu_render_pipeline',
   GpuSampler: prefix + 'gpu_sampler',
@@ -113,6 +114,12 @@ export type SerializedGPUPipelineLayout = BaseSerialized & {
 
 export type SerializedGPUQueue = BaseSerialized & {
   descriptor?: GPUQueueDescriptor;
+};
+
+export type SerializedGPURenderBundleEncoder = BaseSerialized & {
+  // TODO: Avoid object
+  descriptor: object;
+  state: string;
 };
 
 export type SerializedGPURenderPassEncoder = BaseSerialized & {

@@ -7,6 +7,7 @@ import { gpuCommandEncoderManager } from "../resource_managers/gpu_command_encod
 import { gpuComputePipelineManager } from "../resource_managers/gpu_compute_pipeline";
 import { gpuDeviceManager, gpuDeviceMap } from "../resource_managers/gpu_device";
 import { gpuPipelineLayoutManager } from "../resource_managers/gpu_pipeline_layout";
+import { gpuRenderBundleEncoderManager } from "../resource_managers/gpu_render_bundle_encoder";
 import { gpuRenderPipelineManager } from "../resource_managers/gpu_render_pipeline";
 import { gpuShaderModuleManager } from "../resource_managers/gpu_shader_module";
 import { gpuSamplerManager } from "../resource_managers/gpu_sampler";
@@ -29,7 +30,8 @@ export const {
   createComputePipelineAsync: GPUDevice_createComputePipelineAsync,
   createRenderPipeline: GPUDevice_createRenderPipeline,
   createRenderPipelineAsync: GPUDevice_createRenderPipelineAsync,
-  createCommandEncoder: GPUDevice_createCommandEncoder
+  createCommandEncoder: GPUDevice_createCommandEncoder,
+  createRenderBundleEncoder: GPUDevice_createRenderBundleEncoder
 } = GPUDevice.prototype;
 
 function destroy(
@@ -356,6 +358,25 @@ function createCommandEncoder(
   );
 }
 
+function createRenderBundleEncoder(
+  this: GPUDevice,
+  descriptor: GPURenderBundleEncoderDescriptor
+): GPURenderBundleEncoder {
+  const stackTrace = getStackTraceAsString(createRenderBundleEncoder);
+
+  return callFunction<GPURenderBundleEncoder>(
+    this,
+    GPUDevice_createRenderBundleEncoder,
+    'GPUDevice.createRenderBundleEncoder',
+    arguments,
+    stackTrace,
+    (encoder: GPURenderBundleEncoder) => {
+      gpuDeviceMap.set(encoder, this);
+      gpuRenderBundleEncoderManager.add(encoder, stackTrace, descriptor);
+    }
+  );
+}
+
 export class GPUDeviceHook {
   static override(): void {
     GPUDevice.prototype.destroy = destroy;
@@ -372,6 +393,7 @@ export class GPUDeviceHook {
     GPUDevice.prototype.createRenderPipeline = createRenderPipeline;
     GPUDevice.prototype.createRenderPipelineAsync = createRenderPipelineAsync;
     GPUDevice.prototype.createCommandEncoder = createCommandEncoder;
+    GPUDevice.prototype.createRenderBundleEncoder = createRenderBundleEncoder;
   }
 
   static restore(): void {
@@ -389,5 +411,6 @@ export class GPUDeviceHook {
     GPUDevice.prototype.createRenderPipeline = GPUDevice_createRenderPipeline;
     GPUDevice.prototype.createRenderPipelineAsync = GPUDevice_createRenderPipelineAsync;
     GPUDevice.prototype.createCommandEncoder = GPUDevice_createCommandEncoder;
+    GPUDevice.prototype.createRenderBundleEncoder = GPUDevice_createRenderBundleEncoder;
   }
 }

@@ -12,6 +12,7 @@ import { addGPUComputePipeline, resetGPUComputePipelines } from "./panel/gpu_com
 import { addGPUDevice, resetGPUDevices } from "./panel/gpu_device";
 import { addGPUPipelineLayout, resetGPUPipelineLayouts } from "./panel/gpu_pipeline_layout";
 import { addGPUQueue, resetGPUQueues } from "./panel/gpu_queue";
+import { addGPURenderBundleEncoder, resetGPURenderBundleEncoders } from "./panel/gpu_render_bundle_encoder";
 import { addGPURenderPassEncoder, resetGPURenderPassEncoders } from "./panel/gpu_render_pass_encoder";
 import { addGPURenderPipeline, resetGPURenderPipelines } from "./panel/gpu_render_pipeline";
 import { addGPUSampler, resetGPUSamplers } from "./panel/gpu_sampler";
@@ -40,6 +41,7 @@ const reset = (): void => {
   resetGPUDevices();
   resetGPUPipelineLayouts();
   resetGPUQueues();
+  resetGPURenderBundleEncoders();
   resetGPURenderPassEncoders();
   resetGPURenderPipelines();
   resetGPUShaderModules();
@@ -91,6 +93,9 @@ port.onMessage.addListener((message: any): void => {
       break;
     case Actions.GpuQueue:
       addGPUQueue(message.queue);
+      break;
+    case Actions.GpuRenderBundleEncoder:
+      addGPURenderBundleEncoder(message.renderBundleEncoder);
       break;
     case Actions.GpuRenderPassEncoder:
       addGPURenderPassEncoder(message.renderPassEncoder);
