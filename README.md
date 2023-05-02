@@ -104,7 +104,7 @@ or issues at [the GitHub issues](https://github.com/takahirox/webgpu-devtools/is
 
 Also feel free to post any bug reports or feature requests at [the GitHub issues](https://github.com/takahirox/webgpu-devtools/issues).
 
-The author is not a frong-end engineer. Ideas or PRs for improving the UI are very welcome.
+The author is not a front-end engineer. Ideas or PRs for improving the UI are very welcome.
 
 ## Disclaimer
 
