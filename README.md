@@ -16,6 +16,14 @@ for details.
 To try WebGPU use Chrome 113 (it is [Chrome Beta](https://www.google.com/chrome/beta/) at
 writing this README on Apr.22.2023) or newer. Or enable WebGPU via `chrome://flags` on older Chromes.
 
+## How to install the WebGPU devtools
+
+You can install the WebGPU devtools from the [Chrome Web store](https://chrome.google.com/webstore/detail/webgpu-devtools/ckabpgjkjmbkfmichbbgcgbelkbbpopi)
+
+This project is still in the alpha stage. If you encounter any issue,
+[please file an issue](https://github.com/takahirox/webgpu-devtools/issues) before
+sending 1-star review at the store :)
+
 ## Demo video
 
 [Demo Video](https://twitter.com/superhoge/status/1650000134594523136)
@@ -48,17 +56,6 @@ The Features of the WebGPU devtools are
 
 Feel free to request features at [the GitHub issues](https://github.com/takahirox/webgpu-devtools/issues).
 
-## How to install
-
-1. Download the source code from this repository
-
-```sh
-$ git clone https://github.com/takahirox/webgpu-devtools.git
-```
-
-2. Manually load `webgpu-devtools/extensions` as an unpacked extension in developer mode.
-Please refer to [this document](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).
-
 ## How to use
 
 1. Go to a WebGPU application web page (eg: [Three.js WebGPU examples](https://threejs.org/examples/?q=webgpu#webgpu_loader_gltf))
@@ -75,10 +72,10 @@ The WebGPU devtools overrides WebGPU functions and tracks WebGPU objects.
 They may affect performance, memory usage, and functionality in WebGPU applications.
 You are recommened to enable the WebGPU devtools only when debugging.
 
-## How to build locally
+## How to build and install locally
 
-If you want to locally build the WebGPU devtools, clone this repository and then
-run `npm install` and `npm run build` commands.
+If you want to locally build and install the WebGPU devtools, clone this repository
+and then run `npm install` and `npm run build` commands.
 
 ```sh
 $ git clone https://github.com/takahirox/webgpu-devtools.git
@@ -86,6 +83,10 @@ $ cd webgpu-devtools
 $ npm install
 $ npm run build
 ```
+
+After that, manually load `webgpu-devtools/extensions` as an unpacked extension
+in developer mode. Please refer to
+[this document](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).
 
 ## Known issues
 
