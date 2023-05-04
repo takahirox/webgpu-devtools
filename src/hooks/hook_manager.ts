@@ -9,6 +9,7 @@ import { GPUCommandEncoderHook } from "./gpu_command_encoder";
 import { GPUComputePassEncoderHook } from "./gpu_compute_pass_encoder";
 import { GPUComputePipelineHook } from "./gpu_compute_pipeline";
 import { GPUDeviceHook } from "./gpu_device";
+import { GPURenderBundleEncoderHook } from "./gpu_render_bundle_encoder";
 import { GPURenderPassEncoderHook } from "./gpu_render_pass_encoder";
 import { GPURenderPipelineHook } from "./gpu_render_pipeline";
 import { GPUTextureHook } from "./gpu_texture";
@@ -39,6 +40,7 @@ export class HookManager {
     GPUComputePassEncoderHook,
     GPUComputePipelineHook,
     GPUDeviceHook,
+    GPURenderBundleEncoderHook,
     GPURenderPassEncoderHook,
     GPURenderPipelineHook,
     GPUQueueHook,

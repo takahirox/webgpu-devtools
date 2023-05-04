@@ -31,6 +31,7 @@ const Actions = {
     GpuDevice: prefix + 'gpu_device',
     GpuPipelineLayout: prefix + 'gpu_pipeline_layout',
     GpuQueue: prefix + 'gpu_queue',
+    GpuRenderBundle: prefix + 'gpu_render_bundle',
     GpuRenderBundleEncoder: prefix + 'gpu_render_bundle_encoder',
     GpuRenderPassEncoder: prefix + 'gpu_render_pass_encoder',
     GpuRenderPipeline: prefix + 'gpu_render_pipeline',
@@ -226,6 +227,12 @@ if ('gpu' in navigator) {
         port.postMessage({
             action: _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuQueue,
             queue: event.detail.queue
+        });
+    }, false);
+    window.addEventListener(_common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderBundle, (event) => {
+        port.postMessage({
+            action: _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderBundle,
+            renderBundle: event.detail.renderBundle
         });
     }, false);
     window.addEventListener(_common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderBundleEncoder, (event) => {

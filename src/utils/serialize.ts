@@ -11,6 +11,8 @@ import { gpuCommandEncoderManager } from "../resource_managers/gpu_command_encod
 import { gpuDeviceManager } from "../resource_managers/gpu_device";
 import { gpuPipelineLayoutManager } from "../resource_managers/gpu_pipeline_layout";
 import { gpuQueueManager } from "../resource_managers/gpu_queue";
+import { gpuRenderBundleManager } from "../resource_managers/gpu_render_bundle";
+import { gpuRenderBundleEncoderManager } from "../resource_managers/gpu_render_bundle_encoder";
 import { gpuRenderPassEncoderManager } from "../resource_managers/gpu_render_pass_encoder";
 import { gpuRenderPipelineManager } from "../resource_managers/gpu_render_pipeline";
 import { gpuSamplerManager } from "../resource_managers/gpu_sampler";
@@ -142,6 +144,20 @@ export const serialize = (data: any): any => {
       isGPUObject: true,
       type: 'GPUQueue',
       id: gpuQueueManager.getId(data)
+    };
+  }
+  if (data instanceof GPURenderBundle) {
+    return {
+      isGPUObject: true,
+      type: 'GPURenderBundle',
+      id: gpuRenderBundleManager.getId(data)
+    };
+  }
+  if (data instanceof GPURenderBundleEncoder) {
+    return {
+      isGPUObject: true,
+      type: 'GPURenderBundleEncoder',
+      id: gpuRenderBundleEncoderManager.getId(data)
     };
   }
   if (data instanceof GPURenderPassEncoder) {

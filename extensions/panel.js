@@ -10594,6 +10594,7 @@ const Actions = {
     GpuDevice: prefix + 'gpu_device',
     GpuPipelineLayout: prefix + 'gpu_pipeline_layout',
     GpuQueue: prefix + 'gpu_queue',
+    GpuRenderBundle: prefix + 'gpu_render_bundle',
     GpuRenderBundleEncoder: prefix + 'gpu_render_bundle_encoder',
     GpuRenderPassEncoder: prefix + 'gpu_render_pass_encoder',
     GpuRenderPipeline: prefix + 'gpu_render_pipeline',
@@ -12019,6 +12020,75 @@ const resetGPUQueues = () => {
     queueMap.clear();
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(queuesNumElement, queues.length);
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.removeChildElements)(queuesListElement);
+};
+
+
+/***/ }),
+
+/***/ "./src/extensions/panel/gpu_render_bundle.ts":
+/*!***************************************************!*\
+  !*** ./src/extensions/panel/gpu_render_bundle.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addGPURenderBundle": () => (/* binding */ addGPURenderBundle),
+/* harmony export */   "resetGPURenderBundles": () => (/* binding */ resetGPURenderBundles)
+/* harmony export */ });
+/* harmony import */ var _any__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./any */ "./src/extensions/panel/any.ts");
+/* harmony import */ var _hidable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hidable */ "./src/extensions/panel/hidable.ts");
+/* harmony import */ var _stacktrace__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./stacktrace */ "./src/extensions/panel/stacktrace.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./src/extensions/panel/utils.ts");
+
+
+
+
+const renderBundles = [];
+const renderBundleMap = new Map();
+const renderBundlesElement = document.getElementById('renderBundles');
+const renderBundlesTitleElement = document.getElementById('renderBundlesTitle');
+const renderBundlesSignElement = document.getElementById('renderBundlesSign');
+const renderBundlesNumElement = document.getElementById('renderBundlesNum');
+const renderBundlesListElement = document.getElementById('renderBundlesList');
+(0,_hidable__WEBPACK_IMPORTED_MODULE_1__.setupHidableList)(renderBundlesElement, renderBundlesTitleElement, renderBundlesListElement, renderBundlesSignElement);
+/*
+ * <hidable-list
+ *   label="GPURenderBundles[${index}]"
+ *   items=[
+ *     <stacktrace lines=${renderBundle.creationStackTrace} />,
+ *     ...
+ *   ]
+ * />
+ */
+const createGPURenderBundleElement = (renderBundle, index) => {
+    const items = [];
+    for (const key in renderBundle) {
+        switch (key) {
+            case 'creationStackTrace':
+                items.push((0,_stacktrace__WEBPACK_IMPORTED_MODULE_2__.createStackTraceElement)(renderBundle.creationStackTrace, 'creationStackTrace:'));
+                break;
+            default:
+                const value = renderBundle[key];
+                items.push((0,_any__WEBPACK_IMPORTED_MODULE_0__.createAnyElement)(value, `${key}:`));
+                break;
+        }
+    }
+    return (0,_hidable__WEBPACK_IMPORTED_MODULE_1__.createHidableListElement)(`GPURenderBundles[${index}] id: ${renderBundle.id}, ${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.stringify)(renderBundle.label)}`, items, `GPURenderBundle_${renderBundle.id}`);
+};
+const addGPURenderBundle = (renderBundle) => {
+    renderBundles.push(renderBundle);
+    const index = renderBundles.length - 1;
+    renderBundleMap.set(renderBundle.id, index);
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(renderBundlesNumElement, renderBundles.length);
+    renderBundlesListElement.appendChild(createGPURenderBundleElement(renderBundle, index));
+};
+const resetGPURenderBundles = () => {
+    renderBundles.length = 0;
+    renderBundleMap.clear();
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.setResourceNumElement)(renderBundlesNumElement, renderBundles.length);
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.removeChildElements)(renderBundlesListElement);
 };
 
 
@@ -13807,14 +13877,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _panel_gpu_device__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./panel/gpu_device */ "./src/extensions/panel/gpu_device.ts");
 /* harmony import */ var _panel_gpu_pipeline_layout__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./panel/gpu_pipeline_layout */ "./src/extensions/panel/gpu_pipeline_layout.ts");
 /* harmony import */ var _panel_gpu_queue__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./panel/gpu_queue */ "./src/extensions/panel/gpu_queue.ts");
-/* harmony import */ var _panel_gpu_render_bundle_encoder__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./panel/gpu_render_bundle_encoder */ "./src/extensions/panel/gpu_render_bundle_encoder.ts");
-/* harmony import */ var _panel_gpu_render_pass_encoder__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./panel/gpu_render_pass_encoder */ "./src/extensions/panel/gpu_render_pass_encoder.ts");
-/* harmony import */ var _panel_gpu_render_pipeline__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./panel/gpu_render_pipeline */ "./src/extensions/panel/gpu_render_pipeline.ts");
-/* harmony import */ var _panel_gpu_sampler__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./panel/gpu_sampler */ "./src/extensions/panel/gpu_sampler.ts");
-/* harmony import */ var _panel_gpu_shader_module__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./panel/gpu_shader_module */ "./src/extensions/panel/gpu_shader_module.ts");
-/* harmony import */ var _panel_gpu_texture__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./panel/gpu_texture */ "./src/extensions/panel/gpu_texture.ts");
-/* harmony import */ var _panel_gpu_texture_view__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./panel/gpu_texture_view */ "./src/extensions/panel/gpu_texture_view.ts");
-/* harmony import */ var _panel_hidable__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./panel/hidable */ "./src/extensions/panel/hidable.ts");
+/* harmony import */ var _panel_gpu_render_bundle__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./panel/gpu_render_bundle */ "./src/extensions/panel/gpu_render_bundle.ts");
+/* harmony import */ var _panel_gpu_render_bundle_encoder__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./panel/gpu_render_bundle_encoder */ "./src/extensions/panel/gpu_render_bundle_encoder.ts");
+/* harmony import */ var _panel_gpu_render_pass_encoder__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./panel/gpu_render_pass_encoder */ "./src/extensions/panel/gpu_render_pass_encoder.ts");
+/* harmony import */ var _panel_gpu_render_pipeline__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./panel/gpu_render_pipeline */ "./src/extensions/panel/gpu_render_pipeline.ts");
+/* harmony import */ var _panel_gpu_sampler__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./panel/gpu_sampler */ "./src/extensions/panel/gpu_sampler.ts");
+/* harmony import */ var _panel_gpu_shader_module__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./panel/gpu_shader_module */ "./src/extensions/panel/gpu_shader_module.ts");
+/* harmony import */ var _panel_gpu_texture__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./panel/gpu_texture */ "./src/extensions/panel/gpu_texture.ts");
+/* harmony import */ var _panel_gpu_texture_view__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./panel/gpu_texture_view */ "./src/extensions/panel/gpu_texture_view.ts");
+/* harmony import */ var _panel_hidable__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./panel/hidable */ "./src/extensions/panel/hidable.ts");
+
 
 
 
@@ -13855,18 +13927,19 @@ const reset = () => {
     (0,_panel_gpu_device__WEBPACK_IMPORTED_MODULE_11__.resetGPUDevices)();
     (0,_panel_gpu_pipeline_layout__WEBPACK_IMPORTED_MODULE_12__.resetGPUPipelineLayouts)();
     (0,_panel_gpu_queue__WEBPACK_IMPORTED_MODULE_13__.resetGPUQueues)();
-    (0,_panel_gpu_render_bundle_encoder__WEBPACK_IMPORTED_MODULE_14__.resetGPURenderBundleEncoders)();
-    (0,_panel_gpu_render_pass_encoder__WEBPACK_IMPORTED_MODULE_15__.resetGPURenderPassEncoders)();
-    (0,_panel_gpu_render_pipeline__WEBPACK_IMPORTED_MODULE_16__.resetGPURenderPipelines)();
-    (0,_panel_gpu_shader_module__WEBPACK_IMPORTED_MODULE_18__.resetGPUShaderModules)();
-    (0,_panel_gpu_texture__WEBPACK_IMPORTED_MODULE_19__.resetGPUTextures)();
-    (0,_panel_gpu_sampler__WEBPACK_IMPORTED_MODULE_17__.resetGPUSamplers)();
-    (0,_panel_gpu_texture_view__WEBPACK_IMPORTED_MODULE_20__.resetGPUTextureViews)();
+    (0,_panel_gpu_render_bundle__WEBPACK_IMPORTED_MODULE_14__.resetGPURenderBundles)();
+    (0,_panel_gpu_render_bundle_encoder__WEBPACK_IMPORTED_MODULE_15__.resetGPURenderBundleEncoders)();
+    (0,_panel_gpu_render_pass_encoder__WEBPACK_IMPORTED_MODULE_16__.resetGPURenderPassEncoders)();
+    (0,_panel_gpu_render_pipeline__WEBPACK_IMPORTED_MODULE_17__.resetGPURenderPipelines)();
+    (0,_panel_gpu_shader_module__WEBPACK_IMPORTED_MODULE_19__.resetGPUShaderModules)();
+    (0,_panel_gpu_texture__WEBPACK_IMPORTED_MODULE_20__.resetGPUTextures)();
+    (0,_panel_gpu_sampler__WEBPACK_IMPORTED_MODULE_18__.resetGPUSamplers)();
+    (0,_panel_gpu_texture_view__WEBPACK_IMPORTED_MODULE_21__.resetGPUTextureViews)();
     (0,_panel_frame__WEBPACK_IMPORTED_MODULE_1__.resetFrames)();
 };
 resetButton.addEventListener('click', reset);
-expandAllButton.addEventListener('click', _panel_hidable__WEBPACK_IMPORTED_MODULE_21__.showAll);
-hideAllButton.addEventListener('click', _panel_hidable__WEBPACK_IMPORTED_MODULE_21__.hideAll);
+expandAllButton.addEventListener('click', _panel_hidable__WEBPACK_IMPORTED_MODULE_22__.showAll);
+hideAllButton.addEventListener('click', _panel_hidable__WEBPACK_IMPORTED_MODULE_22__.hideAll);
 // TODO: Avoid any
 port.onMessage.addListener((message) => {
     switch (message.action) {
@@ -13906,26 +13979,29 @@ port.onMessage.addListener((message) => {
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuQueue:
             (0,_panel_gpu_queue__WEBPACK_IMPORTED_MODULE_13__.addGPUQueue)(message.queue);
             break;
+        case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderBundle:
+            (0,_panel_gpu_render_bundle__WEBPACK_IMPORTED_MODULE_14__.addGPURenderBundle)(message.renderBundle);
+            break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderBundleEncoder:
-            (0,_panel_gpu_render_bundle_encoder__WEBPACK_IMPORTED_MODULE_14__.addGPURenderBundleEncoder)(message.renderBundleEncoder);
+            (0,_panel_gpu_render_bundle_encoder__WEBPACK_IMPORTED_MODULE_15__.addGPURenderBundleEncoder)(message.renderBundleEncoder);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderPassEncoder:
-            (0,_panel_gpu_render_pass_encoder__WEBPACK_IMPORTED_MODULE_15__.addGPURenderPassEncoder)(message.renderPassEncoder);
+            (0,_panel_gpu_render_pass_encoder__WEBPACK_IMPORTED_MODULE_16__.addGPURenderPassEncoder)(message.renderPassEncoder);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuRenderPipeline:
-            (0,_panel_gpu_render_pipeline__WEBPACK_IMPORTED_MODULE_16__.addGPURenderPipeline)(message.renderPipeline);
+            (0,_panel_gpu_render_pipeline__WEBPACK_IMPORTED_MODULE_17__.addGPURenderPipeline)(message.renderPipeline);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.ShaderModule:
-            (0,_panel_gpu_shader_module__WEBPACK_IMPORTED_MODULE_18__.addGPUShaderModule)(message.shaderModule);
+            (0,_panel_gpu_shader_module__WEBPACK_IMPORTED_MODULE_19__.addGPUShaderModule)(message.shaderModule);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.Texture:
-            (0,_panel_gpu_texture__WEBPACK_IMPORTED_MODULE_19__.addGPUTexture)(message.texture);
+            (0,_panel_gpu_texture__WEBPACK_IMPORTED_MODULE_20__.addGPUTexture)(message.texture);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.GpuSampler:
-            (0,_panel_gpu_sampler__WEBPACK_IMPORTED_MODULE_17__.addGPUSampler)(message.sampler);
+            (0,_panel_gpu_sampler__WEBPACK_IMPORTED_MODULE_18__.addGPUSampler)(message.sampler);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.TextureView:
-            (0,_panel_gpu_texture_view__WEBPACK_IMPORTED_MODULE_20__.addGPUTextureView)(message.textureView);
+            (0,_panel_gpu_texture_view__WEBPACK_IMPORTED_MODULE_21__.addGPUTextureView)(message.textureView);
             break;
         case _common_messages__WEBPACK_IMPORTED_MODULE_0__.Actions.Frame:
             (0,_panel_frame__WEBPACK_IMPORTED_MODULE_1__.addFrame)(message.frame);
