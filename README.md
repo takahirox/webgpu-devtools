@@ -106,6 +106,13 @@ Also feel free to post any bug reports or feature requests at [the GitHub issues
 
 The author is not a front-end engineer. Ideas or PRs for improving the UI are very welcome.
 
+See the [development flow](docs/development-flow.md) for Issue and PR authoring,
+validation, and the English collaboration-language policy, and the
+[review and merge guidelines](docs/review-guidelines.md) for review and merge decisions.
+Use the [Issue template](.github/ISSUE_TEMPLATE/issue.md) and
+[PR template](.github/pull_request_template.md). AI contributors should start with
+[AGENTS.md](AGENTS.md).
+
 ## Disclaimer
 
 This software is provided for debugging purposes only. This software is not intended to be used
