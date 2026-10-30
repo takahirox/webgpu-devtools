@@ -14,6 +14,8 @@ Verify both completeness and scope:
 
 Prefer the smallest change that completely addresses the Issue.
 
+Review applicable interface changes against the [UI/UX principles](../README.md#uiux).
+
 ## Check validation and acceptance
 
 Require mandatory pre-merge acceptance criteria to be achievable and verifiable before merge. Check the evidence for each criterion and assess whether validation covers the changed files and resulting behavior.

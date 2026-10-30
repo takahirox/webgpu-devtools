@@ -56,6 +56,19 @@ The Features of the WebGPU devtools are
 
 Feel free to request features at [the GitHub issues](https://github.com/takahirox/webgpu-devtools/issues).
 
+## UI/UX
+
+These principles apply to the WebGPU devtools panel, including its object and command views,
+content viewers, controls, and messages.
+
+1. **Keep it simple.** Show only necessary information and actions; avoid unnecessary UI elements.
+2. **Show, don't tell.** Prefer layout, spacing and visual hierarchy over explanatory labels or prose to communicate structure.
+3. **Intuitive and predictable.** Keep appearance and behavior consistent with user expectations; don't interrupt the user's work.
+
+Preserve necessary control labels, accessible names, error messages, and information needed to use
+the interface. Simplification must preserve meaningful consent, destructive-action safeguards,
+and necessary warnings.
+
 ## How to use
 
 1. Go to a WebGPU application web page (eg: [Three.js WebGPU examples](https://threejs.org/examples/?q=webgpu#webgpu_loader_gltf))
