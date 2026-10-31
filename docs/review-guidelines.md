@@ -22,6 +22,10 @@ Require mandatory pre-merge acceptance criteria to be achievable and verifiable 
 
 Use the actual tooling described in the [development guidance](development-flow.md#2-implement-and-validate). `npm run build` is the webpack build; `npm test` is a failing placeholder, not a test suite. For templates/documentation-only changes, check template/Markdown syntax, links and anchors, whitespace, and consistency. Do not demand unrelated runtime suites, device checks, or deployed-site verification for those changes.
 
+Apply the [test and CI performance principles](development-flow.md#test-and-ci-performance-principles): assess the additional defects covered, duplication with existing checks, and execution/maintenance cost of new or expanded validation while preserving required regression confidence.
+
+> Does this change provide sufficient confidence with the lightest appropriate validation, without redundant execution?
+
 Validation claims must accurately distinguish checks performed and their results from failures, skipped checks, and unperformed checks. Optional validation is not a blocking acceptance criterion. Require human confirmation, physical-device testing, subjective evaluation, or external approval only when the actual Issue needs it, with a reason and an expected result.
 
 Keep genuinely necessary post-merge verification separate and pending until performed. For example, merging may trigger deployment; applicable code/configuration, build, and automated checks happen before merge, while publication and the newly published site can be verified only afterward. Pre-merge evidence does not prove deployment or publication succeeded. Pending checks possible only after merge are not pre-merge approval conditions and do not waive implementation requirements or applicable pre-merge checks.

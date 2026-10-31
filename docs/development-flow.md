@@ -24,7 +24,7 @@ The default branch is `main`. Inspect its current files and instructions, reuse 
 
 The TypeScript implementation is in `src/`; browser extension files are in `extensions/`. See the [README build and local installation instructions](../README.md#how-to-build-and-install-locally) for setup and loading the unpacked extension.
 
-Choose validation based on the changed files and the actual [package scripts](../package.json):
+Apply the [test and CI performance principles](#test-and-ci-performance-principles) when choosing validation based on the changed files and the actual [package scripts](../package.json):
 
 - `npm run build` runs webpack and is relevant to implementation or build changes after installing dependencies as described in the README.
 - `npm run watch` runs webpack in watch mode for local development; it is not a finite validation check.
@@ -32,6 +32,19 @@ Choose validation based on the changed files and the actual [package scripts](..
 - No lint or Markdown-check script is currently defined. For templates/documentation-only changes, inspect Markdown and template syntax, resolve relative links and heading anchors, check consistency across guidance and templates, and run `git diff --check`. Use available Markdown tooling where appropriate and report what was actually checked.
 
 Documentation-only changes require no new runtime tests, browser/hardware checks, or deployed-site verification. Implementation changes may need focused browser or WebGPU checks when justified by the Issue; explain any necessary device or human dependency instead of requiring it for every change.
+
+### Test and CI performance principles
+
+**Detect the required failures at the lightest appropriate layer, without redundant execution.** Preserve required behavior, regression confidence, and meaningful integration coverage when moving or reducing checks.
+
+This repository currently has no configured CI workflows or automated test suite; the package scripts above and focused local extension checks are the available validation. These principles apply to that work and future test/CI additions. Changes to tests, workflows, caches, or tooling need separately scoped implementation work.
+
+1. **Prefer the lightest meaningful layer.** When adding tests, cover calculations, branches, serialization, and broad data combinations with fast unit/component tests. Use browser, WebGPU, and end-to-end checks for boundaries that require them, such as extension messaging, GPU capture, and panel rendering. Each test should catch a concrete defect rather than mirror the implementation.
+2. **Choose combinations deliberately.** Select representative buffer/texture formats, command types, capture states, and browsers covering distinct processing paths. Avoid automatically multiplying every combination; use exhaustive combinations where interactions require them. Retain required regressions and integration coverage when redistributing checks.
+3. **Match validation to the change.** Documentation needs the Markdown/link/whitespace checks above. Panel UI changes need the build and focused interface checks; core hooks, analyzers, and resource tracking need the build and relevant behavior checks. Build changes need the build; future CI changes need configuration and affected execution checks. Keep mandatory pre-merge checks applicable to the Issue and optional validation separate. If CI is added, give fast feedback, full regression validation, and deployment/publication distinct responsibilities and triggers; record genuinely post-merge-only verification separately.
+4. **Reuse work and eliminate duplicate execution.** Reuse builds, fixtures, downloads, and expensive browser/GPU setup where valid, with cache keys that reflect relevant inputs and isolation that prevents stale results or shared-state failures. For future CI, avoid equivalent push/PR runs for the same revision and cancel superseded runs when safe while preserving necessary deployment ordering. Parallelize independent work based on measured resource use; more workers do not necessarily improve feedback time.
+5. **Review test value and added cost together.** Ask which additional defect a new or expanded check detects, whether existing coverage already supplies that assurance, and what execution and maintenance cost it adds. Watch repeated fresh browser/GPU/compiler setup, large captured fixtures, long frame-capture loops, and Cartesian-product growth.
+6. **Maintain an execution-time budget.** No measured normal-CI baseline or target is recorded here. Establish an evidence-based baseline and appropriate target during actual test/CI performance work, then monitor growth and investigate overruns. Track elapsed feedback time, total runner/computation time, and queue time separately. Revisit validation structure and duplication while retaining meaningful assertions and required coverage. This guidance introduces no benchmark, hardware purchase, timing threshold, or new merge gate.
 
 ## 3. Create a PR for the Issue
 
