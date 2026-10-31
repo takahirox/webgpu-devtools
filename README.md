@@ -122,6 +122,7 @@ The author is not a front-end engineer. Ideas or PRs for improving the UI are ve
 See the [development flow](docs/development-flow.md) for Issue and PR authoring,
 validation, and the English collaboration-language policy, and the
 [review and merge guidelines](docs/review-guidelines.md) for review and merge decisions.
+Choose validation using the [test and CI performance principles](docs/development-flow.md#test-and-ci-performance-principles).
 Use the [Issue template](.github/ISSUE_TEMPLATE/issue.md) and
 [PR template](.github/pull_request_template.md). AI contributors should start with
 [AGENTS.md](AGENTS.md).
