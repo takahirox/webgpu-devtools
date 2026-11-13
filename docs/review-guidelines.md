@@ -8,7 +8,7 @@ Read the source Issue, PR description, complete diff, and available validation r
 
 Verify both completeness and scope:
 
-- All requirements claimed as resolved are implemented. If the PR is intentionally partial, its description must say so and must not claim to close the Issue.
+- All requirements claimed as resolved are implemented. If the PR is intentionally partial, its description must state the remaining scope and must not claim to close the Issue. Pending post-merge-only verification does not make an otherwise complete implementation partial.
 - Each change is justified by the Issue. Request removal of unrelated refactoring, speculative frameworks, unnecessary abstractions, or configuration without a demonstrated need.
 - The change is correct, fits the existing implementation, and updates affected documentation.
 
@@ -20,7 +20,7 @@ Review applicable interface changes against the [UI/UX principles](../README.md#
 
 Require mandatory pre-merge acceptance criteria to be achievable and verifiable before merge. Check the evidence for each criterion and assess whether validation covers the changed files and resulting behavior.
 
-Use the actual tooling described in the [development guidance](development-flow.md#2-implement-and-validate). `npm run build` is the webpack build; `npm test` is a failing placeholder, not a test suite. For templates/documentation-only changes, check template/Markdown syntax, links and anchors, whitespace, and consistency. Do not demand unrelated runtime suites, device checks, or deployed-site verification for those changes.
+Use the actual tooling described in the [development guidance](development-flow.md#2-implement-and-validate). `npm run build` is the webpack build; `npm test` is a failing placeholder, not a test suite. For templates/documentation-only changes, check template/Markdown syntax, links and anchors, whitespace, and consistency. Do not demand unrelated runtime suites, manual approval gates, device checks, heavyweight model downloads, or deployed-site verification for those changes.
 
 Apply the [test and CI performance principles](development-flow.md#test-and-ci-performance-principles): assess the additional defects covered, duplication with existing checks, and execution/maintenance cost of new or expanded validation while preserving required regression confidence.
 
@@ -38,6 +38,8 @@ Distinguish these outcomes clearly in the review or workflow result:
 - **Human input required — waiting:** when a necessary decision, confirmation, or evidence cannot be supplied by the agent, record the specific question, why it is required, and what answer or evidence is expected. Use the workflow's wait path and resume review after the answer arrives. If no automated wait path is available, preserve this state and wait for the answer without repeatedly requesting code fixes. Track any independent agent-fixable findings separately; do not label missing human input as a code defect. Necessary pre-merge human confirmation must be resolved before approval.
 - **Approved — ready to merge:** approve and merge through the authorized workflow when the Issue is fully addressed, the implementation is correct, scope is justified, mandatory pre-merge checks are sufficient and pass, and no blocking findings or necessary pre-merge questions remain. Follow applicable repository protections. Do not block approval on checks possible only after merge.
 
-After merge, perform only the recorded required post-merge checks. Report their actual results and any follow-up; leave unperformed checks pending. If none are required, state that explicitly rather than inventing a deployment or hardware requirement.
+Preserve `Closes #N` for a fully implemented Issue whose applicable mandatory pre-merge acceptance is satisfied. Do not request removing it, keeping the source Issue open, or withholding approval solely for pending post-merge-only verification. Otherwise, review and ProjectWeave publication can undo each other in a repeated Review → Fix → Publish → Review loop. Actual missing implementation, mandatory pre-merge tests, required protections, and necessary pre-merge human acceptance remain blockers.
+
+After successful merge, close the original Issue, then perform only the recorded required post-merge checks. Follow the [post-merge evidence and follow-up guidance](development-flow.md#6-perform-required-post-merge-verification): record actual results in the merged PR, closed Issue, or linked validation report; keep unperformed or environment-blocked checks pending. Closure does not claim they passed, and an unavailable environment alone does not establish a product defect. For an actual defect, check for an equivalent Issue and use it or create a new linked Issue with reproduction steps, affected revision, expected/actual behavior, and original Issue/PR links. Do not reopen the original Issue solely for this follow-up. If no checks are required, state that explicitly rather than inventing a deployment or hardware requirement.
 
 Adapted from GitWeave's [review guidelines](https://github.com/takahirox/gitweave/blob/main/docs/review-guidelines.md).
