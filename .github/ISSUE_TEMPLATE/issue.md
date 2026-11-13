@@ -17,7 +17,7 @@ Describe what should be true when this Issue is resolved.
 
 ## Context
 
-Add relevant examples, logs, related Issues, and environment details. For a browser or WebGPU problem, include browser, extension, OS, and GPU details when relevant.
+Add relevant examples, logs, related Issues, and environment details. For a browser or WebGPU problem, include browser, extension, OS, and GPU details when relevant. For a defect found after merge, check for an equivalent Issue first and include the affected revision and links to the original Issue and PR.
 
 ## Reproduction steps (if applicable)
 
@@ -35,4 +35,4 @@ List useful additional checks separately from required completion criteria, or s
 
 ## Required post-merge verification
 
-Record only genuinely necessary checks that can happen only after merge, or state that none are required. Keep them pending until performed; pre-merge checks do not prove deployment or publication succeeded. See the [review guidelines](https://github.com/takahirox/webgpu-devtools/blob/main/docs/review-guidelines.md).
+Record only genuinely necessary checks that can happen only after merge, or state that none are required. Keep them pending until performed; pre-merge checks do not prove deployment or publication succeeded. These checks follow merge and closure of the fully implemented Issue; closure does not claim they passed. Follow the [post-merge lifecycle](https://github.com/takahirox/webgpu-devtools/blob/main/docs/development-flow.md#6-perform-required-post-merge-verification) for evidence and new linked Issues for actual defects, without reopening the original solely for follow-up.
